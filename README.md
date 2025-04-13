@@ -1,0 +1,95 @@
+# Weather App
+
+A beautiful Flutter weather application that allows users to search for and view weather information for cities around the world. The app features a modern UI with dynamic theming based on weather conditions.
+
+![Weather App Screenshot](https://via.placeholder.com/800x400?text=Weather+App+Screenshot)
+
+## Features
+
+- 🔍 **City Search**: Search for weather information by city name
+- 🌤️ **Current Weather**: View current temperature and weather conditions
+- 🌡️ **Temperature Details**: Display minimum and maximum temperatures
+- 🎨 **Dynamic Theming**: App theme changes based on current weather conditions
+- 📱 **Responsive Design**: Works across different device sizes
+- 🔄 **State Management**: Uses BLoC pattern for efficient state management
+
+## Tech Stack
+
+- **Flutter**: Cross-platform UI framework
+- **Dart**: Programming language
+- **flutter_bloc**: State management library
+- **Dio**: HTTP client for API requests
+- **WeatherAPI**: Weather data provider
+
+## Getting Started
+
+### Prerequisites
+
+- Flutter SDK (version ^3.7.2)
+- Dart SDK
+- An IDE (VSCode, Android Studio, etc.)
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/larbibnb/weatherapp.git
+   ```
+
+2. Navigate to the project directory:
+   ```bash
+   cd weatherapp
+   ```
+
+3. Install dependencies:
+   ```bash
+   flutter pub get
+   ```
+
+4. Run the app:
+   ```bash
+   flutter run
+   ```
+
+## Project Structure
+
+```
+lib/
+├── cubites/              # BLoC pattern implementations
+├── models/               # Data models
+├── services/             # API services
+├── views/                # App screens
+├── widgets/              # Reusable UI components
+└── main.dart             # App entry point
+```
+
+## How to Use
+
+1. **Home Screen**: When first opened, the app shows a "No Weather Data" screen with a search button
+2. **Search**: Tap the search icon or button to open the search screen
+3. **Finding a City**: Enter a city name and press enter
+4. **Weather Details**: View the comprehensive weather information that appears
+
+## API Key
+
+This app uses the WeatherAPI service. A demo API key is included, but for production use, please register at [WeatherAPI.com](https://www.weatherapi.com/) to get your own API key.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgements
+
+- [WeatherAPI](https://www.weatherapi.com/) for providing the weather data
+- Flutter team for the amazing framework
+- All contributors who help improve the app
