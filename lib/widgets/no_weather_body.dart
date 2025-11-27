@@ -11,7 +11,10 @@ class NoWeatherBody extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Colors.lightBlue, Colors.lightBlue.shade100],
+          colors: [
+            Theme.of(context).appBarTheme.backgroundColor ?? Colors.blue,
+            Colors.white,
+          ],
         ),
       ),
       child: Padding(

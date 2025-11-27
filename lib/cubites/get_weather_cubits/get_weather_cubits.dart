@@ -16,4 +16,8 @@ class GetWeatherCubit extends Cubit<WeatherState> {
       emit(WeatherFailureState());
     }
   }
+
+  void resetState() {
+    emit(NoWeatherInfoStates());
+  }
 }

@@ -9,6 +9,12 @@ class SearchView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(Icons.arrow_back),
+        ),
         title: const Text(
           'Search City',
           style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2),

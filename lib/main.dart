@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:weatherapp/cubites/get_weather_cubits/get_weather_cubits.dart';
 import 'package:weatherapp/cubites/get_weather_cubits/get_weather_states.dart';
+import 'package:weatherapp/cubites/llm_weather_dersciption/llm_weather_cubit.dart';
 import 'package:weatherapp/views/home_view.dart';
 
 void main() {
@@ -13,12 +14,16 @@ class WeatherApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => GetWeatherCubit(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => LlmWeatherCubit()),
+        BlocProvider(create: (context) => GetWeatherCubit()),
+      ],
       child: Builder(
         builder:
             (context) => BlocBuilder<GetWeatherCubit, WeatherState>(
               builder: (context, state) {
+                final weatherCubit = context.read<GetWeatherCubit>();
                 return MaterialApp(
                   debugShowCheckedModeBanner: false,
                   home: const HomeView(),
@@ -27,9 +32,7 @@ class WeatherApp extends StatelessWidget {
                       color:
                           state is WeatherLoadedState
                               ? getThemeColor(
-                                BlocProvider.of<GetWeatherCubit>(
-                                  context,
-                                ).weatherModel.weatherStateName,
+                                weatherCubit.weatherModel.weatherStateName,
                               )
                               : Colors.blue,
                     ),
