@@ -19,4 +19,8 @@ class LlmWeatherCubit extends Cubit<LlmWeatherStates> {
       emit(LlmWeatherFailure(errorMessage: e.toString()));
     }
   }
+
+  void resetState() {
+    emit(LlmWeatherInitial());
+  }
 }

@@ -21,6 +21,7 @@ class HomeView extends StatelessWidget {
               if (didPop) return;
               if (isweatherloaded) {
                 context.read<GetWeatherCubit>().resetState();
+                context.read<LlmWeatherCubit>().resetState();
               }
             },
             child:
