@@ -10,9 +10,9 @@
 .history
 .svn/
 .swiftpm/
-.env/
 migrate_working_dir/
-
+# Secrets file
+.env
 # IntelliJ related
 *.iml
 *.ipr
