@@ -42,77 +42,69 @@ class TemperatureDetail extends StatelessWidget {
 
 class ResponsiveWeatherRow extends StatelessWidget {
   const ResponsiveWeatherRow({super.key, required this.weatherModel});
-  final dynamic
-  weatherModel; // Replace 'dynamic' with your actual WeatherModel type
+  final dynamic weatherModel;
 
   @override
   Widget build(BuildContext context) {
-    // Get screen width for flexible sizing
     final screenWidth = MediaQuery.of(context).size.width;
-
-    // Scale the font size for the average temperature based on screen size
-    final avgTempFontSize = screenWidth < 350 ? 60.0 : 70.0;
-
-    // Scale the icon container size
-    final iconSize = screenWidth < 350 ? 65.0 : 68.0;
+    final avgTempFontSize =
+        screenWidth < 350 ? 45.0 : 70.0; // Slightly reduced for better fit
+    final iconSize = screenWidth < 350 ? 50.0 : 60.0; // Slightly reduced
 
     return Padding(
-      // Add horizontal padding to prevent hitting the screen edges
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.all(8.0),
       child: Row(
-        // Use spaceBetween to push items to the edges, which works better
-        // when space is constrained compared to spaceAround.
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           // 1. Weather Icon (Fixed/Scaled Size)
-          Container(
-            width: iconSize,
-            height: iconSize,
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Image.network(
-              // Assuming weatherModel has the correct property
-              'https:${weatherModel.weatherstateIcon}',
-              fit: BoxFit.scaleDown,
+          Expanded(
+            flex: 1,
+            child: Container(
+              margin: const EdgeInsets.all(8),
               width: iconSize,
               height: iconSize,
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) return child;
-                return const Center(
-                  child: CircularProgressIndicator(color: Colors.white),
-                );
-              },
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Image.network(
+                'https:${weatherModel.weatherstateIcon}',
+                fit: BoxFit.scaleDown,
+                width: iconSize,
+                height: iconSize,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return const Center(
+                    child: CircularProgressIndicator(color: Colors.white),
+                  );
+                },
+              ),
             ),
           ),
-
-          const SizedBox(width: 6), // Small spacer between icon and temp
-          // 2. Average Temperature (Wrapped in FittedBox for scaling)
+          // 2. Average Temperature
           Expanded(
-            flex: 2, // Give more space to the temperature text
+            flex: 1,
             child: FittedBox(
-              fit: BoxFit.scaleDown, // Will scale down the text if it overflows
+              fit: BoxFit.scaleDown,
               alignment: Alignment.center,
               child: Text(
                 '${weatherModel.avgtemp.toString()}°',
                 style: TextStyle(
                   fontWeight: FontWeight.w900,
-                  fontSize: avgTempFontSize, // Scaled font size
+                  fontSize: avgTempFontSize,
                   color: Colors.white,
                 ),
               ),
             ),
           ),
-
           // 3. Max/Min Temperature Column
           Expanded(
-            flex: 1, // Give less space to the details column
+            flex: 1,
+            // ALIGNMENT FIX: Use CrossAxisAlignment.start to keep details left-aligned
+            // within their allotted space, which looks clean next to the main temp.
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start, // Align text to the right
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Assuming TemperatureDetail is a widget
                 TemperatureDetail(
                   label: 'Max',
                   value: weatherModel.maxTemp.toString(),
@@ -132,6 +124,8 @@ class ResponsiveWeatherRow extends StatelessWidget {
     );
   }
 }
+// The helper widgets TemperatureDetail and ResponsiveWeatherRow remain as you provided them
+// (with the exception of fixing a small bug in ResponsiveWeatherRow's CrossAxisAlignment)
 
 class WeatherInfoBody extends StatelessWidget {
   const WeatherInfoBody({
@@ -153,160 +147,166 @@ class WeatherInfoBody extends StatelessWidget {
     ).format(weatherModel.date);
     String formattedTime = DateFormat('h:mm a').format(weatherModel.date);
 
-    return SingleChildScrollView(
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            // Use colors based on weather state for thematic background
-            colors: [
-              getThemeColor(weatherModel.weatherStateName),
-              getThemeColor(
-                weatherModel.weatherStateName,
-              )[700]!, // Darker shade at top
-              getThemeColor(weatherModel.weatherStateName)[300]!,
-            ],
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment:
-                CrossAxisAlignment
-                    .stretch, // Stretch children for better alignment
-            children: [
-              const SizedBox(height: 50),
-              // City Name
-              Text(
-                weatherModel.cityName,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 36,
-                  color: Colors.white,
-                ),
+    // Use LayoutBuilder to determine available height for full-screen background
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          child: Container(
+            // Set the container height to at least the screen height
+            // to ensure the gradient always covers the whole view.
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  getThemeColor(weatherModel.weatherStateName),
+                  getThemeColor(weatherModel.weatherStateName)[700]!,
+                  getThemeColor(weatherModel.weatherStateName)[300]!,
+                ],
               ),
-              const SizedBox(height: 8),
-
-              // Date and Time
-              Text(
-                formattedTime,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 24, color: Colors.white70),
-              ),
-              Text(
-                formattedDate,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 16, color: Colors.white70),
-              ),
-
-              const SizedBox(height: 48),
-
-              // Weather Icon, Temperature, Max/Min
-              ResponsiveWeatherRow(weatherModel: weatherModel),
-              const SizedBox(height: 48),
-
-              // Weather State Name
-              Text(
-                weatherModel.weatherStateName,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 28,
-                  color: Colors.white,
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              // LLM Description Section
-              Text(
-                'Weather Description:',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white.withOpacity(0.8),
-                ),
-              ),
-              const SizedBox(height: 10),
-
-              // Button to fetch LLM Description
-              CircleAvatar(
-                radius: 30,
-                backgroundColor: Colors.white.withOpacity(0.2),
-                child: IconButton(
-                  onPressed: () {
-                    llmWeatherCubit.getLlmWeather(weatherModel);
-                  },
-                  icon: const Icon(
-                    Icons.format_quote_sharp,
-                    size: 30,
-                    color: Colors.white,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                // Use MainAxisAlignment.start for scrollable content
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 50), // Replaces top Spacer
+                  // --- City Name and Dates ---
+                  Text(
+                    weatherModel.cityName,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 36,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 15),
+                  const SizedBox(height: 8),
 
-              // LLM Description BlocBuilder
-              BlocBuilder<LlmWeatherCubit, LlmWeatherStates>(
-                builder: (context, state) {
-                  if (state is LlmWeatherSuccess) {
-                    return Container(
-                      padding: const EdgeInsets.all(16),
-                      margin: const EdgeInsets.symmetric(horizontal: 0),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.9),
-                        borderRadius: BorderRadius.circular(15),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 10,
-                            spreadRadius: 2,
-                          ),
-                        ],
-                      ),
-                      child: Text(
-                        state.description,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          height: 1.5,
-                          fontWeight: FontWeight.normal,
-                          color:
-                              Colors.black87, // Dark text for light background
+                  Text(
+                    formattedTime,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 24, color: Colors.white70),
+                  ),
+                  Text(
+                    formattedDate,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 16, color: Colors.white70),
+                  ),
+
+                  const SizedBox(height: 48),
+
+                  // --- Weather Data Row ---
+                  ResponsiveWeatherRow(weatherModel: weatherModel),
+                  const SizedBox(height: 48),
+
+                  // --- Weather State Name ---
+                  Text(
+                    weatherModel.weatherStateName,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 28,
+                      color: Colors.white,
+                    ),
+                  ),
+
+                  const SizedBox(
+                    height: 50,
+                  ), // Dynamic spacing before LLM section
+                  // --- LLM Description Section ---
+                  Text(
+                    'Weather Description:',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white.withOpacity(0.8),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  // Button to fetch LLM Description
+                  Center(
+                    // Center the CircleAvatar
+                    child: CircleAvatar(
+                      radius: 30,
+                      backgroundColor: Colors.white.withOpacity(0.2),
+                      child: IconButton(
+                        onPressed: () {
+                          llmWeatherCubit.getLlmWeather(weatherModel);
+                        },
+                        icon: const Icon(
+                          Icons.format_quote_sharp,
+                          size: 30,
+                          color: Colors.white,
                         ),
                       ),
-                    );
-                  } else if (state is LlmWeatherFailure) {
-                    return Text(
-                      'Failed to get description: ${state.errorMessage}',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(color: Colors.redAccent),
-                    );
-                  } else if (state is LlmWeatherLoading) {
-                    return const Center(
-                      child: CircularProgressIndicator(color: Colors.white),
-                    );
-                  } else {
-                    return const SizedBox.shrink();
-                  }
-                },
-              ),
+                    ),
+                  ),
+                  const SizedBox(height: 15),
 
-              const SizedBox(height: 20),
-              // Last Updated Time
-              Text(
-                'Last Updated: ${formattedTime}',
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 14, color: Colors.white54),
+                  // LLM Description BlocBuilder
+                  BlocBuilder<LlmWeatherCubit, LlmWeatherStates>(
+                    builder: (context, state) {
+                      if (state is LlmWeatherSuccess) {
+                        return Container(
+                          padding: const EdgeInsets.all(16),
+                          margin: const EdgeInsets.symmetric(horizontal: 0),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.9),
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                blurRadius: 10,
+                                spreadRadius: 2,
+                              ),
+                            ],
+                          ),
+                          child: Text(
+                            state.description,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              height: 1.5,
+                              fontWeight: FontWeight.normal,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        );
+                      } else if (state is LlmWeatherFailure) {
+                        return Text(
+                          'Failed to get description: ${state.errorMessage}',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(color: Colors.redAccent),
+                        );
+                      } else if (state is LlmWeatherLoading) {
+                        return const Center(
+                          child: CircularProgressIndicator(color: Colors.white),
+                        );
+                      } else {
+                        return const SizedBox.shrink();
+                      }
+                    },
+                  ),
+
+                  const SizedBox(height: 30), // Spacing above 'Last Updated'
+                  // Last Updated Time
+                  Text(
+                    'Last Updated: ${formattedTime}',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 14, color: Colors.white54),
+                  ),
+                  const SizedBox(height: 20),
+                ],
               ),
-              const SizedBox(height: 20),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

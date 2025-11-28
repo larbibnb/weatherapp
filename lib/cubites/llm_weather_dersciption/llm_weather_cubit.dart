@@ -10,7 +10,7 @@ class LlmWeatherCubit extends Cubit<LlmWeatherStates> {
   void getLlmWeather(WeatherModel weatherModel) async {
     final data = weatherModel.toJson();
     final prompt =
-        'Based on this data: ${jsonEncode(data)}, write a weather report that is both informative and engaging for a general audience. The report should be a single paragraph, highlighting the key weather conditions in a creative and descriptive way';
+        'Based on this data: ${jsonEncode(data)}, write a weather report that is both informative and engaging for a general audience. The report should be a single paragraph, highlighting the key weather conditions in a creative and descriptive way in arabic language.';
     emit(LlmWeatherLoading());
     try {
       final llmResponse = await LlmService().generate(prompt);
